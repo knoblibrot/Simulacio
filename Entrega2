@@ -1,0 +1,33 @@
+library(boot)
+# function to obtain R-Squared from the data 
+estim.rate1 <- function(dat,ind) {
+  sample.mean <- mean(dat[ind])
+  cv2 <- min(max((var(dat[ind]) / (sample.mean * sample.mean)), 0.5), 1)
+  a <- sqrt(1 + 2 * (cv2 - 1))
+  result <- (2 /sample.mean) / (1 + a)
+  names(result) <- "hat.rate1"
+  return(result)
+}
+# bootstrapping with 1000 replications 
+results <- boot(dat, estim.rate1, 
+                R=10000)
+
+# view results
+results 
+plot(results)
+
+# get 95% confidence interval 
+boot.ci(results, type="basic")
+boot.ci(results, type="bca")
+
+
+## Example from StatExact manual
+
+dat3 <- c(dat2[,1],dat2[,2])
+dat3 <- as.data.frame(dat3)
+dat3 <- cbind(dat3,c(rep("first",15),rep("second",15)))
+colnames(dat3) <- c("value","machine")
+dat3$V2 <- as.factor(data$V2)
+library(coin)
+oneway_test(value~machine, data=dat3,
+            distribution=approximate(B=9999))
